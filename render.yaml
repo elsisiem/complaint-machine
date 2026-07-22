@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: complaint-machine
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    envVars:
+      - key: NOVITA_API_KEY
+        sync: false
+      - key: ACTIONLAYER_API_KEY
+        sync: false
