@@ -9,3 +9,5 @@ services:
         sync: false
       - key: ACTIONLAYER_API_KEY
         sync: false
+      - key: TRUST_PROXY
+        value: "1"
