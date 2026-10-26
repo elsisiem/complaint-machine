@@ -1,81 +1,122 @@
-# Complaint Machine
+<h1 align="center">Complaint Machine</h1>
+<p align="center">Drafts a firm, well-sourced complaint letter and tells you exactly where to file it. Nothing is sent without your approval.</p>
+<p align="center">
+  <a href="#how-it-works">How it works</a> ·
+  <a href="#run-locally">Run locally</a> ·
+  <a href="#configuration">Configuration</a> ·
+  <a href="#status">Status</a>
+</p>
+<p align="center">
+  <img src="https://img.shields.io/badge/license-MIT-111318?style=flat-square" alt="MIT license">
+  <img src="https://img.shields.io/badge/Python-3.9%2B-111318?style=flat-square&logo=python&logoColor=white" alt="Python 3.9+">
+  <img src="https://img.shields.io/badge/Flask-3-111318?style=flat-square&logo=flask&logoColor=white" alt="Flask 3">
+</p>
 
-An AI agent that files complaints for you and escalates until resolved.
+## Why
 
-## What It Does
+Most complaints fail on the first letter: vague, angry, or sent to an address nobody reads. Complaint Machine drafts the letter from your facts, suggests where to send it, and drafts the text for the official regulator and BBB forms. A human reads and approves every outbound action.
 
-1. **You describe the problem** - Company name, what happened, what you want
-2. **AI generates a complaint letter** - Legally-informed, references CCPA/FTC, matches your chosen tone
-3. **Discovers company contacts** - CS emails, executive contacts, social handles, phone numbers
-4. **Sends through multiple channels** - Email, Twitter/X, contact forms
-5. **Escalates automatically** - BBB complaints, Ripoff Report, PissedConsumer, mass tweeting executives
+## How it works
 
-## How It Works
+1. You enter the company, what happened, the outcome you want, optional evidence and a tone: firm, assertive, legal or polite. A checkbox marks financial products.
+2. Llama 3.3 70B on Novita AI (OpenAI-compatible API) drafts the letter. The prompt tells the model to use only your facts and to avoid statute numbers it cannot be sure of. It leaves `[YOUR NAME]`, `[YOUR EMAIL]` and `[YOUR PHONE]` placeholders for you to fill in.
+3. The model also suggests contacts: a customer service email, up to 5 executive emails, an X handle and a phone number. The server drops malformed values. Every suggestion is labeled "unverified suggestion" in the UI and in the API response (`contacts_status`).
+4. Email and tweet go through ActionLayer, one recipient or one post at a time. You edit the text, click Review, and the UI shows the exact recipient and text. Only after you approve does the POST fire.
+5. For regulators and review bodies, the app drafts text tailored to each venue and shows the official page. You paste it in and submit it yourself.
 
-| Component | Role |
-|-----------|------|
-| **Novita AI** | Generates complaint letters, discovers contacts, creates escalation content |
-| **ActionLayer** | Executes real actions - sends emails, posts to websites, files complaints |
+| Venue | Shown when | Official page |
+|-------|------------|---------------|
+| Better Business Bureau | Always | https://www.bbb.org/file-a-complaint |
+| CFPB | You tick the financial product box | https://www.consumerfinance.gov/complaint/ |
+| State attorney general | Always | https://www.naag.org/find-my-ag/ (NAAG directory, then your state's form) |
+| FTC ReportFraud | Always | https://reportfraud.ftc.gov/ |
 
-## Escalation Ladder
+### Approval gate
 
+The send routes enforce the approval step on the server, not only in the UI. A request is rejected with `400` and nothing is sent unless it carries `"confirmed": true` and the exact text to send. The server never falls back to a stored letter or a suggested recipient. It also rejects a message that still contains an unfilled `[YOUR ...]` placeholder.
+
+```bash
+curl -X POST http://localhost:5000/api/complaint/<id>/send-email \
+  -H "Content-Type: application/json" \
+  -d '{"confirmed": true, "email": "support@example.com", "subject": "Complaint regarding Acme", "text": "Dear Acme, ..."}'
 ```
-Level 1: Email customer service
-Level 2: Email executives directly
-Level 3: Tweet at company publicly
-Level 4: File BBB complaint
-Level 5: Post on Ripoff Report
-Level 6: Post on PissedConsumer
-Level 7: Mass tweet at company + all executives
+
+```json
+{"success": true, "sent": {"type": "email", "to": "support@example.com", "subject": "Complaint regarding Acme", "text": "Dear Acme, ..."}, "result": {"success": true, "result": {}}}
 ```
 
-## Setup
+| Route | Purpose |
+|-------|---------|
+| `POST /api/complaint` | Draft the letter, contact suggestions and venue list |
+| `GET /api/complaint/<id>` | Read a complaint held in server memory |
+| `POST /api/complaint/<id>/draft/venue/<venue>` | Draft text for `bbb`, `cfpb`, `state_ag` or `ftc` |
+| `POST /api/complaint/<id>/draft/tweet` | Draft one tweet of 280 characters or fewer |
+| `POST /api/complaint/<id>/draft/follow-up` | Draft a follow-up email. Does not send it |
+| `POST /api/complaint/<id>/send-email` | Send one email. Requires `confirmed: true` |
+| `POST /api/complaint/<id>/tweet` | Post one tweet. Requires `confirmed: true` |
 
-### 1. Get API Keys
+Drafting and sending each allow 10 requests per minute per client IP. Beyond that the server returns `429` with a `Retry-After` header.
 
-- **Novita AI**: Sign up at [novita.ai](https://novita.ai) and add credits
-- **ActionLayer**: Sign up at [actionlayer.io](https://actionlayer.io) and connect your email/Twitter
+## Run locally
 
-### 2. Install
+Prerequisites: Python 3.9 or newer, a [Novita AI](https://novita.ai) key, and optionally an [ActionLayer](https://actionlayer.io) key for sending.
 
 ```bash
 git clone https://github.com/elsisiem/complaint-machine.git
 cd complaint-machine
+python -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-```
-
-### 3. Configure
-
-Create a `.env` file:
-
-```
-NOVITA_API_KEY=your_novita_key
-ACTIONLAYER_API_KEY=your_actionlayer_key
-```
-
-### 4. Run
-
-```bash
+cp .env.example .env        # add your keys
 python app.py
 ```
 
-Open http://localhost:5000
+Open http://localhost:5000. Without an ActionLayer key, drafting works and the send routes return `503`.
 
-## Usage
+## Configuration
 
-1. Fill in the complaint form (company, what happened, what you want)
-2. Click **Generate Complaint** - AI writes a professional letter
-3. Review the letter and discovered contacts
-4. Click **Send** next to any channel (email, exec, twitter)
-5. Use the **Escalation Ladder** to file BBB complaints, post publicly, or mass-tweet
+Set these in `.env` or in the host's environment. `.env.example` lists the same variables.
 
-## Tech Stack
+| Variable | Required | Purpose |
+|----------|----------|---------|
+| `NOVITA_API_KEY` | Yes | Novita AI key for letters, venue text and contact suggestions |
+| `ACTIONLAYER_API_KEY` | For sending | ActionLayer key for the approved email or tweet |
+| `PORT` | No | Port to listen on. Defaults to 5000 |
+| `FLASK_DEBUG` | No | Set to `1` to run the Flask debugger. Never on a public host |
+| `TRUST_PROXY` | No | Set to `1` behind a reverse proxy so the rate limit sees the real client IP |
 
-- **Backend**: Python, Flask
-- **Frontend**: Tailwind CSS, Vanilla JS
-- **AI**: Novita AI (Llama 3.3 70B)
-- **Execution**: ActionLayer API
+The app binds to `0.0.0.0`.
+
+## Deploy
+
+Render: create a new Blueprint and point it at this repo. `render.yaml` defines one web service that runs `pip install -r requirements.txt` and `python app.py`. Render provides `PORT` and the app binds to it. Set `NOVITA_API_KEY` and `ACTIONLAYER_API_KEY` in the dashboard. The blueprint sets `TRUST_PROXY=1`.
+
+The `Procfile` (`web: python app.py`) covers other Procfile hosts.
+
+## Project layout
+
+```
+app.py                 Routes, prompts, rate limit, Novita and ActionLayer clients
+templates/index.html   Single-page UI (Tailwind CDN, vanilla JS)
+render.yaml            Render blueprint
+Procfile               Start command for Procfile hosts
+.env.example           Environment variable template
+requirements.txt       Flask, requests, python-dotenv
+```
+
+## Status
+
+- Contacts are LLM guesses. The model can invent addresses and handles. Verify each one on the company's official site before you send anything.
+- No persistence. Complaints live in server memory (the newest 500 are kept) and are lost on restart. The session list in the page is also in memory.
+- No authentication. Anyone who can open a deployed instance can draft with your Novita key and, with an ActionLayer key set, send an email or tweet from the account connected there. The rate limit slows this down and does not prevent it. Keep a deployment private or put access control in front of it.
+- ActionLayer `success` means it accepted the task. The app does not confirm delivery.
+- Drafts are model output, not legal advice. Read them before you use them.
+- Runs on the Flask development server. There are no automated tests.
+
+## Credits
+
+Built on Novita AI for the model and ActionLayer for agent actions.
 
 ## License
 
-MIT
+MIT. See [LICENSE](LICENSE).
