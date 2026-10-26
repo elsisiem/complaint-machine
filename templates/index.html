@@ -9,8 +9,6 @@
         * { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
         .fade-in { animation: fadeIn 0.3s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        .slide-in { animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
     </style>
 </head>
 <body class="bg-black text-white min-h-screen">
@@ -19,16 +17,17 @@
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-                    <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
                 </div>
                 <span class="text-lg font-semibold tracking-tight">Complaint Machine</span>
             </div>
             <div class="flex items-center gap-4">
+                <span class="text-xs text-zinc-500 hidden sm:inline">Nothing is sent without your approval</span>
                 <span id="complaint-count" class="text-xs text-zinc-500">0 complaints</span>
-                <button onclick="showHelp()" class="text-zinc-500 hover:text-white transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button onclick="showHelp()" class="text-zinc-500 hover:text-white transition-colors" aria-label="How it works">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </button>
@@ -39,45 +38,48 @@
     <main class="max-w-7xl mx-auto p-6">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-            <!-- Left: Form + Letter -->
+            <!-- Left: form and letter -->
             <div class="lg:col-span-5 space-y-4">
-                <!-- Form -->
                 <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-                    <h2 class="text-xs font-medium text-zinc-500 mb-4 uppercase tracking-wider">New Complaint</h2>
+                    <h2 class="text-xs font-medium text-zinc-500 mb-4 uppercase tracking-wider">New complaint</h2>
                     <form id="complaint-form" class="space-y-3">
                         <div>
-                            <label class="block text-xs text-zinc-400 mb-1">Company</label>
-                            <input type="text" id="company" required class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-zinc-500" placeholder="Comcast, United Airlines...">
+                            <label for="company" class="block text-xs text-zinc-400 mb-1">Company</label>
+                            <input type="text" id="company" required maxlength="200" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-zinc-500" placeholder="Comcast, United Airlines">
                         </div>
                         <div>
-                            <label class="block text-xs text-zinc-400 mb-1">What happened</label>
-                            <textarea id="violation" required rows="3" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-zinc-500 resize-none" placeholder="Describe the issue..."></textarea>
+                            <label for="violation" class="block text-xs text-zinc-400 mb-1">What happened</label>
+                            <textarea id="violation" required rows="3" maxlength="4000" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-zinc-500 resize-none" placeholder="Describe the issue"></textarea>
                         </div>
                         <div>
-                            <label class="block text-xs text-zinc-400 mb-1">Desired outcome</label>
-                            <input type="text" id="desired_outcome" required class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-zinc-500" placeholder="Full refund, credit...">
+                            <label for="desired_outcome" class="block text-xs text-zinc-400 mb-1">Desired outcome</label>
+                            <input type="text" id="desired_outcome" required maxlength="1000" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-zinc-500" placeholder="Full refund, account credit">
                         </div>
                         <div>
-                            <label class="block text-xs text-zinc-400 mb-1">Evidence (optional)</label>
-                            <textarea id="evidence" rows="2" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-zinc-500 resize-none" placeholder="Order numbers, dates..."></textarea>
+                            <label for="evidence" class="block text-xs text-zinc-400 mb-1">Evidence (optional)</label>
+                            <textarea id="evidence" rows="2" maxlength="4000" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-zinc-500 resize-none" placeholder="Order numbers, dates, amounts"></textarea>
                         </div>
                         <div>
-                            <label class="block text-xs text-zinc-400 mb-1">Tone</label>
+                            <label for="tone" class="block text-xs text-zinc-400 mb-1">Tone</label>
                             <select id="tone" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-zinc-500">
-                                <option value="firm">Firm & Professional</option>
-                                <option value="aggressive">Aggressive</option>
-                                <option value="legal">Legal & Formal</option>
-                                <option value="pathetic">Sympathetic</option>
+                                <option value="firm">Firm and professional</option>
+                                <option value="assertive">Assertive</option>
+                                <option value="legal">Legal and formal</option>
+                                <option value="polite">Polite</option>
                             </select>
                         </div>
+                        <label class="flex items-start gap-2 text-xs text-zinc-400">
+                            <input type="checkbox" id="financial" class="mt-0.5">
+                            <span>This involves a financial product or service (bank, credit card, loan, credit report). Adds the CFPB to the filing options.</span>
+                        </label>
                         <button type="submit" id="generate-btn" class="w-full bg-white text-black font-medium py-2.5 rounded-lg hover:bg-zinc-200 transition-colors text-sm">
-                            Generate Complaint
+                            Draft complaint
                         </button>
                     </form>
 
                     <div id="loading" class="hidden py-6 text-center">
                         <div class="inline-block w-5 h-5 border-2 border-zinc-600 border-t-white rounded-full animate-spin mb-2"></div>
-                        <p class="text-xs text-zinc-500">Generating complaint letter...</p>
+                        <p class="text-xs text-zinc-500">Drafting the letter and looking up contact suggestions</p>
                     </div>
 
                     <div id="error-msg" class="hidden mt-3 p-3 bg-red-950/50 border border-red-900 rounded-lg">
@@ -85,510 +87,608 @@
                     </div>
                 </div>
 
-                <!-- Generated Letter -->
                 <div id="letter-panel" class="hidden bg-zinc-900 border border-zinc-800 rounded-xl p-5 fade-in">
                     <div class="flex items-center justify-between mb-3">
-                        <h2 class="text-xs font-medium text-zinc-500 uppercase tracking-wider">Generated Letter</h2>
-                        <div class="flex items-center gap-2">
-                            <span id="status-badge" class="text-xs px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400">Draft</span>
-                        </div>
+                        <h2 class="text-xs font-medium text-zinc-500 uppercase tracking-wider">Draft letter</h2>
+                        <span id="status-badge" class="text-xs px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400">draft</span>
                     </div>
                     <div id="letter-content" class="text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap mb-4 max-h-96 overflow-y-auto"></div>
                     <div class="flex gap-2">
-                        <button onclick="copyLetter()" class="flex-1 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-xs hover:bg-zinc-700 transition-colors">
-                            Copy Letter
-                        </button>
-                        <button onclick="regenerate()" class="flex-1 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-xs hover:bg-zinc-700 transition-colors">
-                            Regenerate
-                        </button>
+                        <button type="button" id="copy-letter-btn" class="flex-1 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-xs hover:bg-zinc-700 transition-colors">Copy letter</button>
+                        <button type="button" id="regenerate-btn" class="flex-1 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-xs hover:bg-zinc-700 transition-colors">Regenerate</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Middle: Actions -->
+            <!-- Middle: contacts, actions, file it yourself -->
             <div class="lg:col-span-4 space-y-4">
-                <!-- Send Panel -->
-                <div id="send-panel" class="hidden bg-zinc-900 border border-zinc-800 rounded-xl p-5 slide-in">
-                    <h2 class="text-xs font-medium text-zinc-500 mb-4 uppercase tracking-wider">Send Complaint</h2>
+                <div id="actions-empty" class="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
+                    <h2 class="text-xs font-medium text-zinc-500 mb-2 uppercase tracking-wider">Next steps</h2>
+                    <p class="text-xs text-zinc-500">Draft a complaint to see contact suggestions, send options and where to file it yourself.</p>
+                </div>
 
+                <div id="contacts-panel" class="hidden bg-zinc-900 border border-zinc-800 rounded-xl p-5 fade-in">
+                    <div class="flex items-center justify-between mb-3">
+                        <h2 class="text-xs font-medium text-zinc-500 uppercase tracking-wider">Contact suggestions</h2>
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-amber-950 text-amber-300 border border-amber-900">unverified suggestion</span>
+                    </div>
+                    <p id="contacts-note" class="text-xs text-zinc-500 mb-3"></p>
+                    <div id="contacts-list" class="space-y-2"></div>
+                </div>
+
+                <div id="email-panel" class="hidden bg-zinc-900 border border-zinc-800 rounded-xl p-5 fade-in">
+                    <h2 class="text-xs font-medium text-zinc-500 mb-4 uppercase tracking-wider">Email one recipient</h2>
                     <div class="space-y-3">
-                        <!-- Customer Service Email -->
-                        <div id="cs-email-section" class="hidden">
-                            <p class="text-xs text-zinc-500 mb-1">Customer Service</p>
-                            <div class="flex gap-2">
-                                <input type="text" id="cs-email-input" class="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-zinc-500" placeholder="email@company.com">
-                                <button onclick="sendToEmail('cs')" class="px-3 py-2 bg-white text-black text-xs font-medium rounded-lg hover:bg-zinc-200">
-                                    Send
-                                </button>
-                            </div>
+                        <div>
+                            <label for="email-to" class="block text-xs text-zinc-400 mb-1">To</label>
+                            <input type="email" id="email-to" maxlength="254" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-zinc-500" placeholder="name@company.com">
                         </div>
-
-                        <!-- Executive Email -->
-                        <div id="exec-email-section" class="hidden">
-                            <p class="text-xs text-zinc-500 mb-1">Executive Escalation</p>
-                            <div class="flex gap-2">
-                                <input type="text" id="exec-email-input" class="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-zinc-500" placeholder="exec@company.com">
-                                <button onclick="sendToEmail('exec')" class="px-3 py-2 bg-zinc-700 text-white text-xs font-medium rounded-lg hover:bg-zinc-600">
-                                    Email Exec
-                                </button>
-                            </div>
-                            <div id="exec-emails-list" class="mt-1 flex flex-wrap gap-1"></div>
+                        <div>
+                            <label for="email-subject" class="block text-xs text-zinc-400 mb-1">Subject</label>
+                            <input type="text" id="email-subject" maxlength="200" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-zinc-500">
                         </div>
-
-                        <!-- Twitter -->
-                        <div id="twitter-section" class="hidden">
-                            <p class="text-xs text-zinc-500 mb-1">Twitter/X</p>
-                            <textarea id="tweet-input" rows="2" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-zinc-500 resize-none" placeholder="Auto-generated tweet..."></textarea>
-                            <div class="flex gap-2 mt-2">
-                                <button onclick="sendTweet()" class="flex-1 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-xs hover:bg-zinc-700 transition-colors">
-                                    Post Tweet
-                                </button>
-                                <button onclick="generateTweet()" class="py-2 px-3 bg-zinc-800 border border-zinc-700 rounded-lg text-xs hover:bg-zinc-700 transition-colors">
-                                    Generate
-                                </button>
-                            </div>
+                        <div>
+                            <label for="email-body" class="block text-xs text-zinc-400 mb-1">Message (edit freely, fill in the [YOUR ...] placeholders)</label>
+                            <textarea id="email-body" rows="9" maxlength="10000" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-zinc-500"></textarea>
                         </div>
-
-                        <!-- Phone -->
-                        <div id="phone-section" class="hidden">
-                            <p class="text-xs text-zinc-500 mb-1">Phone</p>
-                            <div class="flex gap-2">
-                                <input type="text" id="phone-input" class="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-zinc-500" placeholder="+1-xxx-xxx-xxxx">
-                                <button onclick="callCompany()" class="px-3 py-2 bg-zinc-700 text-white text-xs font-medium rounded-lg hover:bg-zinc-600">
-                                    Call
-                                </button>
-                            </div>
+                        <p id="email-msg" class="hidden text-xs"></p>
+                        <div class="flex gap-2">
+                            <button type="button" id="email-reset-btn" class="py-2 px-3 bg-zinc-800 border border-zinc-700 rounded-lg text-xs hover:bg-zinc-700 transition-colors">Reset to letter</button>
+                            <button type="button" id="email-followup-btn" class="py-2 px-3 bg-zinc-800 border border-zinc-700 rounded-lg text-xs hover:bg-zinc-700 transition-colors">Draft follow-up</button>
+                            <button type="button" id="email-review-btn" class="flex-1 py-2 bg-white text-black text-xs font-medium rounded-lg hover:bg-zinc-200 transition-colors">Review and send</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Escalation Panel -->
-                <div id="escalation-panel" class="hidden bg-zinc-900 border border-zinc-800 rounded-xl p-5 slide-in">
-                    <h2 class="text-xs font-medium text-zinc-500 mb-4 uppercase tracking-wider">Escalation Ladder</h2>
-
-                    <div class="space-y-2">
-                        <!-- BBB -->
-                        <button onclick="fileBBB()" class="w-full flex items-center gap-3 p-3 bg-zinc-800 rounded-lg hover:bg-zinc-700 transition-colors text-left">
-                            <svg class="w-5 h-5 text-zinc-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                            <div>
-                                <p class="text-xs font-medium">File BBB Complaint</p>
-                                <p class="text-xs text-zinc-500">Better Business Bureau</p>
-                            </div>
-                        </button>
-
-                        <!-- Ripoff Report -->
-                        <button onclick="fileRipoffReport()" class="w-full flex items-center gap-3 p-3 bg-zinc-800 rounded-lg hover:bg-zinc-700 transition-colors text-left">
-                            <svg class="w-5 h-5 text-zinc-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                            </svg>
-                            <div>
-                                <p class="text-xs font-medium">Ripoff Report</p>
-                                <p class="text-xs text-zinc-500">Public complaint database</p>
-                            </div>
-                        </button>
-
-                        <!-- Pissed Consumer -->
-                        <button onclick="filePissedConsumer()" class="w-full flex items-center gap-3 p-3 bg-zinc-800 rounded-lg hover:bg-zinc-700 transition-colors text-left">
-                            <svg class="w-5 h-5 text-zinc-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
-                            </svg>
-                            <div>
-                                <p class="text-xs font-medium">PissedConsumer</p>
-                                <p class="text-xs text-zinc-500">Public review & complaint</p>
-                            </div>
-                        </button>
-
-                        <!-- Twitter Mass -->
-                        <button onclick="twitterEscalation()" class="w-full flex items-center gap-3 p-3 bg-zinc-800 rounded-lg hover:bg-zinc-700 transition-colors text-left">
-                            <svg class="w-5 h-5 text-zinc-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/>
-                            </svg>
-                            <div>
-                                <p class="text-xs font-medium">Twitter Mass Escalation</p>
-                                <p class="text-xs text-zinc-500">Tweet at company + executives</p>
-                            </div>
-                        </button>
-
-                        <!-- Follow Up -->
-                        <button onclick="sendFollowUp()" class="w-full flex items-center gap-3 p-3 bg-zinc-800 rounded-lg hover:bg-zinc-700 transition-colors text-left">
-                            <svg class="w-5 h-5 text-zinc-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                            </svg>
-                            <div>
-                                <p class="text-xs font-medium">Send Follow-Up</p>
-                                <p class="text-xs text-zinc-500">Escalating reminder</p>
-                            </div>
-                        </button>
+                <div id="tweet-panel" class="hidden bg-zinc-900 border border-zinc-800 rounded-xl p-5 fade-in">
+                    <h2 class="text-xs font-medium text-zinc-500 mb-4 uppercase tracking-wider">Post one tweet</h2>
+                    <label for="tweet-text" class="block text-xs text-zinc-400 mb-1">Text</label>
+                    <textarea id="tweet-text" rows="3" maxlength="280" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-zinc-500 resize-none" placeholder="Draft one, or write your own"></textarea>
+                    <div class="flex items-center justify-between mt-1">
+                        <span id="tweet-count" class="text-xs text-zinc-600">0 / 280</span>
+                        <span id="tweet-msg" class="hidden text-xs"></span>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                        <button type="button" id="tweet-draft-btn" class="py-2 px-3 bg-zinc-800 border border-zinc-700 rounded-lg text-xs hover:bg-zinc-700 transition-colors">Draft</button>
+                        <button type="button" id="tweet-handle-btn" class="hidden py-2 px-3 bg-zinc-800 border border-zinc-700 rounded-lg text-xs hover:bg-zinc-700 transition-colors"></button>
+                        <button type="button" id="tweet-review-btn" class="flex-1 py-2 bg-white text-black text-xs font-medium rounded-lg hover:bg-zinc-200 transition-colors">Review and post</button>
                     </div>
                 </div>
 
-                <!-- Status Log -->
-                <div id="status-panel" class="hidden bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-                    <h2 class="text-xs font-medium text-zinc-500 mb-3 uppercase tracking-wider">Activity Log</h2>
+                <div id="venues-panel" class="hidden bg-zinc-900 border border-zinc-800 rounded-xl p-5 fade-in">
+                    <h2 class="text-xs font-medium text-zinc-500 mb-1 uppercase tracking-wider">File it yourself</h2>
+                    <p class="text-xs text-zinc-500 mb-4">The app drafts the text for each venue. You paste it into the official form and submit it. The app never files on your behalf.</p>
+                    <div id="venues-list" class="space-y-3"></div>
+                </div>
+
+                <div id="log-panel" class="hidden bg-zinc-900 border border-zinc-800 rounded-xl p-5">
+                    <h2 class="text-xs font-medium text-zinc-500 mb-3 uppercase tracking-wider">Activity</h2>
                     <div id="activity-log" class="space-y-2 max-h-64 overflow-y-auto"></div>
                 </div>
             </div>
 
-            <!-- Right: Complaints List -->
+            <!-- Right: complaints in this browser session -->
             <div class="lg:col-span-3">
                 <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-                    <h2 class="text-xs font-medium text-zinc-500 mb-3 uppercase tracking-wider">Complaints</h2>
-                    <div id="complaints-list" class="space-y-2">
-                        <p class="text-xs text-zinc-600 text-center py-4">No complaints yet</p>
-                    </div>
+                    <h2 class="text-xs font-medium text-zinc-500 mb-3 uppercase tracking-wider">This session</h2>
+                    <div id="complaints-list" class="space-y-2"></div>
+                    <p class="text-xs text-zinc-600 mt-3">Complaints live in memory only and are lost when the server restarts.</p>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Help Modal -->
-    <div id="help-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+    <!-- Approval modal -->
+    <div id="approve-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="approve-heading">
+        <div class="bg-zinc-900 border border-zinc-700 rounded-xl p-6 max-w-lg w-full max-h-[85vh] overflow-y-auto">
+            <h2 id="approve-heading" class="text-base font-semibold mb-1"></h2>
+            <p class="text-xs text-zinc-500 mb-4">Nothing has been sent yet. This is exactly what will be submitted.</p>
+            <dl id="approve-rows" class="space-y-2 text-xs mb-3"></dl>
+            <div id="approve-body" class="whitespace-pre-wrap text-sm text-zinc-200 bg-zinc-800 border border-zinc-700 rounded-lg p-3 max-h-72 overflow-y-auto"></div>
+            <div class="flex gap-2 mt-5">
+                <button type="button" id="approve-cancel" class="flex-1 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm hover:bg-zinc-700 transition-colors">Cancel</button>
+                <button type="button" id="approve-confirm" class="flex-1 py-2.5 bg-white text-black font-medium rounded-lg hover:bg-zinc-200 transition-colors text-sm"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help modal -->
+    <div id="help-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="help-heading">
         <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto">
             <div class="flex items-center justify-between mb-5">
-                <h2 class="text-base font-semibold">How It Works</h2>
-                <button onclick="hideHelp()" class="text-zinc-500 hover:text-white">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <h2 id="help-heading" class="text-base font-semibold">How it works</h2>
+                <button onclick="hideHelp()" class="text-zinc-500 hover:text-white" aria-label="Close">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
             </div>
             <div class="space-y-4 text-sm text-zinc-400">
                 <div>
-                    <h3 class="font-medium text-white mb-1">What is this?</h3>
-                    <p>An AI agent that generates complaint letters and helps you send them through multiple channels - email, social media, and public complaint websites.</p>
+                    <h3 class="font-medium text-white mb-1">Drafts</h3>
+                    <p>Llama 3.3 70B on Novita AI writes the complaint letter, the text for each filing venue, tweet drafts and follow-ups. Review and edit all of it. Fill in the [YOUR ...] placeholders.</p>
                 </div>
                 <div>
-                    <h3 class="font-medium text-white mb-1">Novita AI (The Brain)</h3>
-                    <p>Generates the complaint letters, finds company contacts, and creates escalation content. Uses Llama 3.3 70B model.</p>
+                    <h3 class="font-medium text-white mb-1">Contact suggestions</h3>
+                    <p>The model guesses company contacts and can be wrong. Each one is an unverified suggestion. Check it on the company's official website before you use it.</p>
                 </div>
                 <div>
-                    <h3 class="font-medium text-white mb-1">ActionLayer (The Hands)</h3>
-                    <p>Executes real actions - sends emails, posts tweets, files BBB complaints. Connects your accounts to automate the process.</p>
+                    <h3 class="font-medium text-white mb-1">Sending</h3>
+                    <p>You can email one recipient and post one tweet through ActionLayer. Each time, the app shows the exact recipient and text and waits for you to approve. The server rejects any send that is not marked confirmed.</p>
                 </div>
-                <div class="border-t border-zinc-800 pt-4">
-                    <h3 class="font-medium text-white mb-2">Escalation Ladder</h3>
-                    <div class="space-y-1 text-xs">
-                        <p><span class="text-zinc-300">1. Email CS</span> - Direct to customer service</p>
-                        <p><span class="text-zinc-300">2. Email Exec</span> - Bypass to executives</p>
-                        <p><span class="text-zinc-300">3. Tweet</span> - Public shaming</p>
-                        <p><span class="text-zinc-300">4. BBB</span> - Better Business Bureau</p>
-                        <p><span class="text-zinc-300">5. Ripoff Report</span> - Public complaint database</p>
-                        <p><span class="text-zinc-300">6. PissedConsumer</span> - Public reviews</p>
-                        <p><span class="text-zinc-300">7. Twitter Blast</span> - Mass tweet at everyone</p>
-                    </div>
+                <div>
+                    <h3 class="font-medium text-white mb-1">File it yourself</h3>
+                    <p>For the BBB, the CFPB (financial issues), your state attorney general and the FTC, the app drafts the text and links to the official page. You submit it.</p>
                 </div>
             </div>
-            <button onclick="hideHelp()" class="w-full mt-5 py-2.5 bg-white text-black font-medium rounded-lg hover:bg-zinc-200 transition-colors text-sm">
-                Got it
-            </button>
+            <button onclick="hideHelp()" class="w-full mt-5 py-2.5 bg-white text-black font-medium rounded-lg hover:bg-zinc-200 transition-colors text-sm">Close</button>
         </div>
     </div>
 
     <script>
+        const $ = id => document.getElementById(id);
+        const complaints = {};
         let currentId = null;
-        let complaints = {};
 
-        document.getElementById('complaint-form').addEventListener('submit', async (e) => {
+        function el(tag, cls, text) {
+            const node = document.createElement(tag);
+            if (cls) node.className = cls;
+            if (text !== undefined) node.textContent = text;
+            return node;
+        }
+
+        async function api(path, body) {
+            const res = await fetch(path, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body || {})
+            });
+            let data = {};
+            try { data = await res.json(); } catch (_) {}
+            return { ok: res.ok, status: res.status, data };
+        }
+
+        function current() { return currentId ? complaints[currentId] : null; }
+
+        function setMsg(id, text, isError) {
+            const node = $(id);
+            node.textContent = text || '';
+            node.className = (text ? '' : 'hidden ') + 'text-xs ' + (isError ? 'text-red-400' : 'text-zinc-400');
+        }
+
+        function splitSubject(letter, company) {
+            const m = letter.match(/^\s*\**subject:\**\s*(.+?)\**\s*\n+/i);
+            if (m) return { subject: m[1].trim(), body: letter.slice(m[0].length).trim() };
+            return { subject: `Complaint regarding ${company}`, body: letter };
+        }
+
+        function log(c, text) {
+            c.log.unshift({ time: new Date().toLocaleTimeString(), text });
+            if (c === current()) renderLog(c);
+        }
+
+        // ---- Approval step ----------------------------------------------------
+
+        function approve({ heading, rows, body, confirmLabel }) {
+            return new Promise(resolve => {
+                $('approve-heading').textContent = heading;
+                const dl = $('approve-rows');
+                dl.textContent = '';
+                rows.forEach(([label, value]) => {
+                    const row = el('div', 'flex gap-3');
+                    row.appendChild(el('dt', 'w-16 shrink-0 text-zinc-500', label));
+                    row.appendChild(el('dd', 'text-zinc-200 break-all', value));
+                    dl.appendChild(row);
+                });
+                $('approve-body').textContent = body;
+                $('approve-confirm').textContent = confirmLabel;
+                $('approve-modal').classList.remove('hidden');
+                $('approve-cancel').focus();
+
+                const finish = value => {
+                    $('approve-modal').classList.add('hidden');
+                    $('approve-confirm').onclick = null;
+                    $('approve-cancel').onclick = null;
+                    $('approve-modal').onclick = null;
+                    document.removeEventListener('keydown', onKey);
+                    resolve(value);
+                };
+                const onKey = e => { if (e.key === 'Escape') finish(false); };
+                document.addEventListener('keydown', onKey);
+                $('approve-confirm').onclick = () => finish(true);
+                $('approve-cancel').onclick = () => finish(false);
+                $('approve-modal').onclick = e => { if (e.target.id === 'approve-modal') finish(false); };
+            });
+        }
+
+        // ---- Generate -----------------------------------------------------------
+
+        $('complaint-form').addEventListener('submit', async e => {
             e.preventDefault();
-            const btn = document.getElementById('generate-btn');
-            const loading = document.getElementById('loading');
-            const error = document.getElementById('error-msg');
-
+            const btn = $('generate-btn');
+            const errorBox = $('error-msg');
             btn.disabled = true;
-            btn.textContent = 'Generating...';
-            loading.classList.remove('hidden');
-            error.classList.add('hidden');
+            btn.textContent = 'Drafting';
+            $('loading').classList.remove('hidden');
+            errorBox.classList.add('hidden');
 
             try {
-                const res = await fetch('/api/complaint', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        company: document.getElementById('company').value,
-                        violation: document.getElementById('violation').value,
-                        desired_outcome: document.getElementById('desired_outcome').value,
-                        evidence: document.getElementById('evidence').value,
-                        tone: document.getElementById('tone').value
-                    })
+                const company = $('company').value.trim();
+                const r = await api('/api/complaint', {
+                    company,
+                    violation: $('violation').value,
+                    desired_outcome: $('desired_outcome').value,
+                    evidence: $('evidence').value,
+                    tone: $('tone').value,
+                    financial: $('financial').checked
                 });
-                const data = await res.json();
-
-                if (data.error) {
-                    error.querySelector('p').textContent = data.error;
-                    error.classList.remove('hidden');
+                if (!r.ok) {
+                    errorBox.querySelector('p').textContent = r.data.error || 'Drafting failed. Check the server keys and balance.';
+                    errorBox.classList.remove('hidden');
                     return;
                 }
-
-                currentId = data.complaint_id;
-                complaints[data.complaint_id] = {
-                    id: data.complaint_id,
-                    company: document.getElementById('company').value,
+                const d = r.data;
+                const parts = splitSubject(d.letter, company);
+                complaints[d.complaint_id] = {
+                    id: d.complaint_id,
+                    company,
+                    letter: d.letter,
+                    contacts: d.contacts || {},
+                    contactsNote: d.contacts_note || '',
+                    venues: d.venues || [],
+                    drafts: {},
+                    to: (d.contacts && d.contacts.cs_email) || '',
+                    subject: parts.subject,
+                    emailBody: parts.body,
+                    originalBody: parts.body,
+                    originalSubject: parts.subject,
+                    tweet: '',
                     status: 'draft',
-                    letter: data.letter,
-                    contacts: data.contacts,
                     actions: [],
-                    created_at: new Date().toISOString()
+                    log: []
                 };
-
-                document.getElementById('letter-content').textContent = data.letter;
-                document.getElementById('letter-panel').classList.remove('hidden');
-                showSendPanel(data.complaint_id);
-                renderList();
-
+                selectComplaint(d.complaint_id);
             } catch (err) {
-                error.querySelector('p').textContent = 'Failed to generate. Check your API key and balance.';
-                error.classList.remove('hidden');
+                errorBox.querySelector('p').textContent = 'Could not reach the server.';
+                errorBox.classList.remove('hidden');
             } finally {
                 btn.disabled = false;
-                btn.textContent = 'Generate Complaint';
-                loading.classList.add('hidden');
+                btn.textContent = 'Draft complaint';
+                $('loading').classList.add('hidden');
             }
         });
 
-        function showSendPanel(id) {
-            const c = complaints[id];
-            const contacts = c.contacts || {};
+        $('regenerate-btn').addEventListener('click', () => $('complaint-form').requestSubmit());
 
-            const panel = document.getElementById('send-panel');
-            panel.classList.remove('hidden');
+        $('copy-letter-btn').addEventListener('click', e => {
+            const c = current();
+            if (!c) return;
+            navigator.clipboard.writeText(c.letter);
+            const btn = e.currentTarget;
+            btn.textContent = 'Copied';
+            setTimeout(() => { btn.textContent = 'Copy letter'; }, 2000);
+        });
 
-            // CS Email
-            const csSection = document.getElementById('cs-email-section');
-            if (contacts.cs_email) {
-                csSection.classList.remove('hidden');
-                document.getElementById('cs-email-input').value = contacts.cs_email;
-            } else {
-                csSection.classList.remove('hidden');
-                document.getElementById('cs-email-input').value = '';
-                document.getElementById('cs-email-input').placeholder = 'Enter email manually...';
-            }
-
-            // Exec Email
-            const execSection = document.getElementById('exec-email-section');
-            const execList = document.getElementById('exec-emails-list');
-            if (contacts.exec_emails && contacts.exec_emails.length > 0) {
-                execSection.classList.remove('hidden');
-                document.getElementById('exec-email-input').value = contacts.exec_emails[0];
-                execList.innerHTML = contacts.exec_emails.map(e =>
-                    `<button onclick="document.getElementById('exec-email-input').value='${e}'" class="text-xs bg-zinc-700 px-2 py-0.5 rounded hover:bg-zinc-600">${e}</button>`
-                ).join('');
-            }
-
-            // Twitter
-            const twitterSection = document.getElementById('twitter-section');
-            if (contacts.twitter) {
-                twitterSection.classList.remove('hidden');
-                generateTweet();
-            }
-
-            // Phone
-            const phoneSection = document.getElementById('phone-section');
-            if (contacts.phone) {
-                phoneSection.classList.remove('hidden');
-                document.getElementById('phone-input').value = contacts.phone;
-            }
-
-            // Show escalation after first send
-            if (c.actions.length > 0) {
-                document.getElementById('escalation-panel').classList.remove('hidden');
-            }
-
-            // Activity log
-            document.getElementById('status-panel').classList.remove('hidden');
-            renderActivityLog(c);
-        }
-
-        async function sendToEmail(type) {
-            if (!currentId) return;
-            const email = type === 'exec'
-                ? document.getElementById('exec-email-input').value
-                : document.getElementById('cs-email-input').value;
-
-            if (!email) { alert('Enter an email address'); return; }
-
-            addLog(`Sending ${type} email to ${email}...`);
-
-            const endpoint = type === 'exec' ? 'send-exec' : 'send-email';
-            const res = await fetch(`/api/complaint/${currentId}/${endpoint}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email })
-            });
-            const data = await res.json();
-
-            if (data.success) {
-                addLog(`Email sent to ${email}`);
-                complaints[currentId].actions.push({ type: `${type}_email`, target: email, timestamp: new Date().toISOString() });
-            } else {
-                addLog(`Failed: ${data.error || 'ActionLayer error'}`);
-            }
-
-            renderActivityLog(complaints[currentId]);
-            document.getElementById('escalation-panel').classList.remove('hidden');
-        }
-
-        async function generateTweet() {
-            if (!currentId) return;
-            const c = complaints[currentId];
-            const twitter = c.contacts?.twitter || '';
-
-            const prompt = `Write a factual tweet (under 280 chars) complaining about ${c.company}. Issue: ${c.violation}. Tag @${twitter.replace('@','')}.`;
-            document.getElementById('tweet-input').value = 'Generating...';
-
-            // For demo, generate locally
-            const tweet = `@${twitter.replace('@','')} I had a terrible experience with ${c.company}. ${c.violation.substring(0, 100)}. Waiting for resolution. #CustomerService`;
-            document.getElementById('tweet-input').value = tweet;
-        }
-
-        async function sendTweet() {
-            if (!currentId) return;
-            const tweet = document.getElementById('tweet-input').value;
-            if (!tweet) { alert('Generate or write a tweet first'); return; }
-
-            addLog('Posting tweet...');
-
-            const res = await fetch(`/api/complaint/${currentId}/tweet`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tweet })
-            });
-            const data = await res.json();
-
-            if (data.result?.success) {
-                addLog('Tweet posted');
-                complaints[currentId].actions.push({ type: 'tweet', content: tweet, timestamp: new Date().toISOString() });
-            } else {
-                addLog(`Tweet queued: ${tweet.substring(0, 50)}...`);
-                complaints[currentId].actions.push({ type: 'tweet', content: tweet, timestamp: new Date().toISOString() });
-            }
-
-            renderActivityLog(complaints[currentId]);
-            document.getElementById('escalation-panel').classList.remove('hidden');
-        }
-
-        async function fileBBB() {
-            if (!currentId) return;
-            addLog('Filing BBB complaint...');
-            const res = await fetch(`/api/complaint/${currentId}/bbb`, { method: 'POST' });
-            const data = await res.json();
-            addLog('BBB complaint filed');
-            complaints[currentId].actions.push({ type: 'bbb', timestamp: new Date().toISOString() });
-            renderActivityLog(complaints[currentId]);
-        }
-
-        async function fileRipoffReport() {
-            if (!currentId) return;
-            addLog('Posting to Ripoff Report...');
-            const res = await fetch(`/api/complaint/${currentId}/ripoffreport`, { method: 'POST' });
-            addLog('Ripoff Report posted');
-            complaints[currentId].actions.push({ type: 'ripoff', timestamp: new Date().toISOString() });
-            renderActivityLog(complaints[currentId]);
-        }
-
-        async function filePissedConsumer() {
-            if (!currentId) return;
-            addLog('Posting to PissedConsumer...');
-            const res = await fetch(`/api/complaint/${currentId}/pissedconsumer`, { method: 'POST' });
-            addLog('PissedConsumer review posted');
-            complaints[currentId].actions.push({ type: 'pissed', timestamp: new Date().toISOString() });
-            renderActivityLog(complaints[currentId]);
-        }
-
-        async function twitterEscalation() {
-            if (!currentId) return;
-            addLog('Launching Twitter escalation...');
-            const res = await fetch(`/api/complaint/${currentId}/twitter-escalation`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ target: 'all' })
-            });
-            addLog('Twitter escalation complete');
-            complaints[currentId].actions.push({ type: 'twitter_mass', timestamp: new Date().toISOString() });
-            renderActivityLog(complaints[currentId]);
-        }
-
-        async function sendFollowUp() {
-            if (!currentId) return;
-            addLog('Sending follow-up...');
-            const res = await fetch(`/api/complaint/${currentId}/follow-up`, { method: 'POST' });
-            const data = await res.json();
-            addLog('Follow-up sent');
-            complaints[currentId].actions.push({ type: 'follow_up', timestamp: new Date().toISOString() });
-            renderActivityLog(complaints[currentId]);
-        }
-
-        function copyLetter() {
-            const letter = document.getElementById('letter-content').textContent;
-            navigator.clipboard.writeText(letter);
-            const btn = event.target;
-            btn.textContent = 'Copied!';
-            setTimeout(() => btn.textContent = 'Copy Letter', 2000);
-        }
-
-        function regenerate() {
-            document.getElementById('complaint-form').dispatchEvent(new Event('submit'));
-        }
-
-        function addLog(message) {
-            const log = document.getElementById('activity-log');
-            const time = new Date().toLocaleTimeString();
-            log.innerHTML = `<div class="flex items-start gap-2 text-xs">
-                <span class="text-zinc-600 shrink-0">${time}</span>
-                <span class="text-zinc-400">${message}</span>
-            </div>` + log.innerHTML;
-        }
-
-        function renderActivityLog(c) {
-            const log = document.getElementById('activity-log');
-            if (!c.actions || c.actions.length === 0) {
-                log.innerHTML = '<p class="text-xs text-zinc-600">No activity yet</p>';
-                return;
-            }
-            log.innerHTML = c.actions.map(a => `
-                <div class="flex items-start gap-2 text-xs">
-                    <span class="text-zinc-600 shrink-0">${new Date(a.timestamp).toLocaleTimeString()}</span>
-                    <span class="text-zinc-400">${a.type} -> ${a.target || 'sent'}</span>
-                </div>
-            `).join('');
-        }
-
-        function renderList() {
-            const list = document.getElementById('complaints-list');
-            const ids = Object.keys(complaints);
-            document.getElementById('complaint-count').textContent = `${ids.length} complaint${ids.length !== 1 ? 's' : ''}`;
-
-            if (ids.length === 0) {
-                list.innerHTML = '<p class="text-xs text-zinc-600 text-center py-4">No complaints yet</p>';
-                return;
-            }
-
-            list.innerHTML = ids.reverse().map(id => {
-                const c = complaints[id];
-                const active = currentId === id;
-                return `<button onclick="selectComplaint('${id}')" class="w-full text-left p-3 rounded-lg border transition-colors ${active ? 'bg-zinc-800 border-zinc-700' : 'bg-zinc-800/50 border-zinc-800 hover:border-zinc-700'}">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-medium truncate">${c.company}</span>
-                        <span class="text-xs text-zinc-600">${c.actions.length} actions</span>
-                    </div>
-                </button>`;
-            }).join('');
-        }
+        // ---- Rendering ----------------------------------------------------------
 
         function selectComplaint(id) {
             currentId = id;
             const c = complaints[id];
-            document.getElementById('letter-content').textContent = c.letter;
-            document.getElementById('letter-panel').classList.remove('hidden');
-            document.getElementById('status-badge').textContent = c.status;
-            showSendPanel(id);
+            $('letter-content').textContent = c.letter;
+            $('status-badge').textContent = c.status;
+            $('letter-panel').classList.remove('hidden');
+            $('actions-empty').classList.add('hidden');
+            ['contacts-panel', 'email-panel', 'tweet-panel', 'venues-panel', 'log-panel'].forEach(p => $(p).classList.remove('hidden'));
+
+            renderContacts(c);
+            $('email-to').value = c.to;
+            $('email-subject').value = c.subject;
+            $('email-body').value = c.emailBody;
+            setMsg('email-msg', '');
+            $('tweet-text').value = c.tweet;
+            updateTweetCount();
+            setMsg('tweet-msg', '');
+            renderHandleButton(c);
+            renderVenues(c);
+            renderLog(c);
             renderList();
         }
 
-        function showHelp() { document.getElementById('help-modal').classList.remove('hidden'); }
-        function hideHelp() { document.getElementById('help-modal').classList.add('hidden'); }
-        document.getElementById('help-modal').addEventListener('click', e => { if (e.target.id === 'help-modal') hideHelp(); });
+        function chip(label, value, onPick) {
+            const row = el('div', 'flex items-center gap-2 text-xs');
+            row.appendChild(el('span', 'text-zinc-500 w-24 shrink-0', label));
+            const b = el('button', 'text-left bg-zinc-800 border border-zinc-700 px-2 py-1 rounded hover:bg-zinc-700 break-all', value);
+            b.type = 'button';
+            b.title = 'Use as recipient';
+            b.addEventListener('click', onPick);
+            row.appendChild(b);
+            return row;
+        }
+
+        function plainRow(label, value) {
+            const row = el('div', 'flex items-center gap-2 text-xs');
+            row.appendChild(el('span', 'text-zinc-500 w-24 shrink-0', label));
+            row.appendChild(el('span', 'text-zinc-300 break-all', value));
+            return row;
+        }
+
+        function renderContacts(c) {
+            $('contacts-note').textContent = c.contactsNote;
+            const list = $('contacts-list');
+            list.textContent = '';
+            const k = c.contacts;
+            const pick = addr => () => { $('email-to').value = addr; c.to = addr; };
+            if (k.cs_email) list.appendChild(chip('Customer service', k.cs_email, pick(k.cs_email)));
+            (k.exec_emails || []).forEach(addr => list.appendChild(chip('Executive', addr, pick(addr))));
+            if (k.twitter) list.appendChild(plainRow('X handle', k.twitter));
+            if (k.phone) list.appendChild(plainRow('Phone', k.phone));
+            if (!list.children.length) {
+                list.appendChild(el('p', 'text-xs text-zinc-500', 'No suggestions. Enter a recipient yourself.'));
+            }
+        }
+
+        function renderHandleButton(c) {
+            const btn = $('tweet-handle-btn');
+            if (c.contacts.twitter) {
+                btn.textContent = `Add ${c.contacts.twitter} (unverified)`;
+                btn.classList.remove('hidden');
+            } else {
+                btn.classList.add('hidden');
+            }
+        }
+
+        function renderVenues(c) {
+            const list = $('venues-list');
+            list.textContent = '';
+            c.venues.forEach(v => {
+                const card = el('div', 'bg-zinc-800/60 border border-zinc-800 rounded-lg p-3');
+                card.appendChild(el('p', 'text-xs font-medium', v.name));
+                card.appendChild(el('p', 'text-xs text-zinc-500 mt-0.5', v.note));
+
+                const link = el('a', 'text-xs text-zinc-300 underline break-all block mt-1', v.url);
+                link.href = v.url;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                card.appendChild(link);
+
+                const out = el('div', 'mt-2');
+                const draftBtn = el('button', 'py-1.5 px-3 bg-zinc-800 border border-zinc-700 rounded-lg text-xs hover:bg-zinc-700 transition-colors', c.drafts[v.id] ? 'Redraft' : 'Draft text');
+                draftBtn.type = 'button';
+                const msg = el('p', 'hidden text-xs text-red-400 mt-1');
+
+                const showDraft = text => {
+                    out.textContent = '';
+                    const ta = el('textarea', 'w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-xs mt-2 focus:outline-none focus:border-zinc-500');
+                    ta.rows = 8;
+                    ta.value = text;
+                    ta.addEventListener('input', () => { c.drafts[v.id] = ta.value; });
+                    const copy = el('button', 'mt-2 py-1.5 px-3 bg-zinc-800 border border-zinc-700 rounded-lg text-xs hover:bg-zinc-700 transition-colors', 'Copy text');
+                    copy.type = 'button';
+                    copy.addEventListener('click', () => {
+                        navigator.clipboard.writeText(ta.value);
+                        copy.textContent = 'Copied';
+                        setTimeout(() => { copy.textContent = 'Copy text'; }, 2000);
+                    });
+                    out.appendChild(ta);
+                    out.appendChild(copy);
+                    out.appendChild(el('p', 'text-xs text-zinc-500 mt-2', 'Review it, fill in the brackets, then paste it into the official form above and submit it yourself.'));
+                };
+
+                draftBtn.addEventListener('click', async () => {
+                    draftBtn.disabled = true;
+                    draftBtn.textContent = 'Drafting';
+                    msg.classList.add('hidden');
+                    const r = await api(`/api/complaint/${c.id}/draft/venue/${v.id}`);
+                    draftBtn.disabled = false;
+                    draftBtn.textContent = 'Redraft';
+                    if (!r.ok) {
+                        msg.textContent = r.data.error || 'Drafting failed.';
+                        msg.classList.remove('hidden');
+                        return;
+                    }
+                    c.drafts[v.id] = r.data.draft;
+                    showDraft(r.data.draft);
+                    log(c, `Drafted text for ${v.name}`);
+                });
+
+                card.appendChild(draftBtn);
+                card.appendChild(msg);
+                card.appendChild(out);
+                if (c.drafts[v.id]) showDraft(c.drafts[v.id]);
+                list.appendChild(card);
+            });
+        }
+
+        function renderLog(c) {
+            const box = $('activity-log');
+            box.textContent = '';
+            if (!c.log.length) {
+                box.appendChild(el('p', 'text-xs text-zinc-600', 'No activity yet'));
+                return;
+            }
+            c.log.forEach(entry => {
+                const row = el('div', 'flex items-start gap-2 text-xs');
+                row.appendChild(el('span', 'text-zinc-600 shrink-0', entry.time));
+                row.appendChild(el('span', 'text-zinc-400', entry.text));
+                box.appendChild(row);
+            });
+        }
+
+        function renderList() {
+            const list = $('complaints-list');
+            const ids = Object.keys(complaints);
+            $('complaint-count').textContent = `${ids.length} complaint${ids.length !== 1 ? 's' : ''}`;
+            list.textContent = '';
+            if (!ids.length) {
+                list.appendChild(el('p', 'text-xs text-zinc-600 text-center py-4', 'No complaints yet'));
+                return;
+            }
+            ids.reverse().forEach(id => {
+                const c = complaints[id];
+                const active = currentId === id;
+                const b = el('button', 'w-full text-left p-3 rounded-lg border transition-colors ' + (active ? 'bg-zinc-800 border-zinc-700' : 'bg-zinc-800/50 border-zinc-800 hover:border-zinc-700'));
+                b.type = 'button';
+                const row = el('div', 'flex items-center justify-between gap-2');
+                row.appendChild(el('span', 'text-xs font-medium truncate', c.company));
+                row.appendChild(el('span', 'text-xs text-zinc-600 shrink-0', `${c.actions.length} sent`));
+                b.appendChild(row);
+                b.addEventListener('click', () => selectComplaint(id));
+                list.appendChild(b);
+            });
+        }
+
+        // ---- Email --------------------------------------------------------------
+
+        $('email-to').addEventListener('input', e => { const c = current(); if (c) c.to = e.target.value; });
+        $('email-subject').addEventListener('input', e => { const c = current(); if (c) c.subject = e.target.value; });
+        $('email-body').addEventListener('input', e => { const c = current(); if (c) c.emailBody = e.target.value; });
+
+        $('email-reset-btn').addEventListener('click', () => {
+            const c = current();
+            if (!c) return;
+            c.subject = c.originalSubject;
+            c.emailBody = c.originalBody;
+            $('email-subject').value = c.subject;
+            $('email-body').value = c.emailBody;
+        });
+
+        $('email-followup-btn').addEventListener('click', async () => {
+            const c = current();
+            if (!c) return;
+            const btn = $('email-followup-btn');
+            btn.disabled = true;
+            btn.textContent = 'Drafting';
+            setMsg('email-msg', '');
+            const r = await api(`/api/complaint/${c.id}/draft/follow-up`);
+            btn.disabled = false;
+            btn.textContent = 'Draft follow-up';
+            if (!r.ok) { setMsg('email-msg', r.data.error || 'Drafting failed.', true); return; }
+            c.emailBody = r.data.draft;
+            c.subject = c.originalSubject.toLowerCase().startsWith('follow-up') ? c.originalSubject : `Follow-up: ${c.originalSubject}`;
+            $('email-body').value = c.emailBody;
+            $('email-subject').value = c.subject;
+            setMsg('email-msg', 'Follow-up drafted. Nothing has been sent.');
+            log(c, `Drafted follow-up #${r.data.attempt}`);
+        });
+
+        $('email-review-btn').addEventListener('click', async () => {
+            const c = current();
+            if (!c) return;
+            const to = $('email-to').value.trim();
+            const subject = $('email-subject').value.trim();
+            const text = $('email-body').value.trim();
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) { setMsg('email-msg', 'Enter a valid recipient address.', true); return; }
+            if (!subject) { setMsg('email-msg', 'Enter a subject.', true); return; }
+            if (!text) { setMsg('email-msg', 'The message is empty.', true); return; }
+            const left = text.match(/\[\s*your\s[^\]]{1,30}\]/gi);
+            if (left) { setMsg('email-msg', `Fill in these placeholders first: ${[...new Set(left)].join(', ')}`, true); return; }
+            setMsg('email-msg', '');
+
+            const ok = await approve({
+                heading: 'Send this email?',
+                rows: [['To', to], ['Subject', subject]],
+                body: text,
+                confirmLabel: 'Approve and send'
+            });
+            if (!ok) { setMsg('email-msg', 'Cancelled. Nothing was sent.'); return; }
+
+            const btn = $('email-review-btn');
+            btn.disabled = true;
+            const r = await api(`/api/complaint/${c.id}/send-email`, { email: to, subject, text, confirmed: true });
+            btn.disabled = false;
+            if (r.ok && r.data.success) {
+                c.actions.push({ type: 'email', target: to });
+                c.status = 'sent';
+                if (c === current()) $('status-badge').textContent = c.status;
+                log(c, `Submitted to ActionLayer: email to ${to}`);
+                setMsg('email-msg', 'Submitted to ActionLayer.');
+            } else {
+                const reason = r.data.error || (r.data.result && r.data.result.error) || 'ActionLayer error';
+                log(c, `Email to ${to} failed: ${reason}`);
+                setMsg('email-msg', `Not sent: ${reason}`, true);
+            }
+            renderList();
+        });
+
+        // ---- Tweet --------------------------------------------------------------
+
+        function updateTweetCount() {
+            const n = $('tweet-text').value.length;
+            $('tweet-count').textContent = `${n} / 280`;
+        }
+
+        $('tweet-text').addEventListener('input', e => {
+            const c = current();
+            if (c) c.tweet = e.target.value;
+            updateTweetCount();
+        });
+
+        $('tweet-draft-btn').addEventListener('click', async () => {
+            const c = current();
+            if (!c) return;
+            const btn = $('tweet-draft-btn');
+            btn.disabled = true;
+            btn.textContent = 'Drafting';
+            setMsg('tweet-msg', '');
+            const r = await api(`/api/complaint/${c.id}/draft/tweet`);
+            btn.disabled = false;
+            btn.textContent = 'Draft';
+            if (!r.ok) { setMsg('tweet-msg', r.data.error || 'Drafting failed.', true); return; }
+            c.tweet = r.data.draft;
+            $('tweet-text').value = c.tweet;
+            updateTweetCount();
+            log(c, 'Drafted a tweet');
+        });
+
+        $('tweet-handle-btn').addEventListener('click', () => {
+            const c = current();
+            if (!c || !c.contacts.twitter) return;
+            const handle = c.contacts.twitter;
+            if (!$('tweet-text').value.includes(handle)) {
+                c.tweet = `${handle} ${$('tweet-text').value}`.slice(0, 280);
+                $('tweet-text').value = c.tweet;
+                updateTweetCount();
+            }
+        });
+
+        $('tweet-review-btn').addEventListener('click', async () => {
+            const c = current();
+            if (!c) return;
+            const text = $('tweet-text').value.trim();
+            if (!text) { setMsg('tweet-msg', 'Draft or write a tweet first.', true); return; }
+            if (text.length > 280) { setMsg('tweet-msg', 'Over 280 characters.', true); return; }
+            setMsg('tweet-msg', '');
+
+            const ok = await approve({
+                heading: 'Post this tweet?',
+                rows: [['Posts to', 'X, from the account connected in ActionLayer']],
+                body: text,
+                confirmLabel: 'Approve and post'
+            });
+            if (!ok) { setMsg('tweet-msg', 'Cancelled. Nothing was posted.'); return; }
+
+            const btn = $('tweet-review-btn');
+            btn.disabled = true;
+            const r = await api(`/api/complaint/${c.id}/tweet`, { text, confirmed: true });
+            btn.disabled = false;
+            if (r.ok && r.data.success) {
+                c.actions.push({ type: 'tweet', target: null });
+                log(c, 'Submitted to ActionLayer: tweet');
+                setMsg('tweet-msg', 'Submitted to ActionLayer.');
+            } else {
+                const reason = r.data.error || (r.data.result && r.data.result.error) || 'ActionLayer error';
+                log(c, `Tweet failed: ${reason}`);
+                setMsg('tweet-msg', `Not posted: ${reason}`, true);
+            }
+            renderList();
+        });
+
+        // ---- Help ---------------------------------------------------------------
+
+        function showHelp() { $('help-modal').classList.remove('hidden'); }
+        function hideHelp() { $('help-modal').classList.add('hidden'); }
+        $('help-modal').addEventListener('click', e => { if (e.target.id === 'help-modal') hideHelp(); });
 
         renderList();
     </script>
