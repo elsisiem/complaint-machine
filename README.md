@@ -89,9 +89,9 @@ The app binds to `0.0.0.0`.
 
 ## Deploy
 
-Render: create a new Blueprint and point it at this repo. `render.yaml` defines one web service that runs `pip install -r requirements.txt` and `python app.py`. Render provides `PORT` and the app binds to it. Set `NOVITA_API_KEY` and `ACTIONLAYER_API_KEY` in the dashboard. The blueprint sets `TRUST_PROXY=1`.
+Render: create a new Blueprint and point it at this repo. `render.yaml` defines one web service that runs `pip install -r requirements.txt` and `gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 8 --timeout 120`. Render provides `PORT`. Set `NOVITA_API_KEY` and `ACTIONLAYER_API_KEY` in the dashboard. The blueprint sets `TRUST_PROXY=1`.
 
-The `Procfile` (`web: python app.py`) covers other Procfile hosts.
+The `Procfile` runs the same gunicorn command for other Procfile hosts. Use one worker and several threads, not several workers: complaints and rate limit counters live in process memory, so a second worker would not see complaints created by the first. `python app.py` (the Flask development server) is for local use only.
 
 ## Project layout
 
@@ -99,9 +99,9 @@ The `Procfile` (`web: python app.py`) covers other Procfile hosts.
 app.py                 Routes, prompts, rate limit, Novita and ActionLayer clients
 templates/index.html   Single-page UI (Tailwind CDN, vanilla JS)
 render.yaml            Render blueprint
-Procfile               Start command for Procfile hosts
+Procfile               gunicorn start command for Procfile hosts
 .env.example           Environment variable template
-requirements.txt       Flask, requests, python-dotenv
+requirements.txt       Flask, requests, python-dotenv, gunicorn
 ```
 
 ## Status
@@ -111,7 +111,7 @@ requirements.txt       Flask, requests, python-dotenv
 - No authentication. Anyone who can open a deployed instance can draft with your Novita key and, with an ActionLayer key set, send an email or tweet from the account connected there. The rate limit slows this down and does not prevent it. Keep a deployment private or put access control in front of it.
 - ActionLayer `success` means it accepted the task. The app does not confirm delivery.
 - Drafts are model output, not legal advice. Read them before you use them.
-- Runs on the Flask development server. There are no automated tests.
+- Production runs under gunicorn with one worker, so it cannot scale out across processes. There are no automated tests.
 
 ## Credits
 
